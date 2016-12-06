@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class ServiceHandler extends HttpServlet {
+	
 	private String remoteHost = null;
 	private static long jobNumber = 0;
 
