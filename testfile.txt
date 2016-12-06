@@ -1,4 +1,0 @@
-This is test file.
-
--- file must be ignored by gitignore
--- but as we can see it is visible for project
