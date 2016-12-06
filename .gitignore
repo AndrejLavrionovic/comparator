@@ -11,6 +11,9 @@
 .classpath
 .project
 
+# Testing
+testfile.txt
+
 # Package Files #
 *.jar
 *.war
