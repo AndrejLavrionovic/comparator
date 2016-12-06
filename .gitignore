@@ -7,12 +7,10 @@
 .mtj.tmp/
 
 # Eclipse
-.settings
-.classpath
-.project
+.settings/
+.classpath/
+.project/
 
-# Testing
-testfile.txt
 
 # Package Files #
 *.jar
