@@ -1,13 +1,11 @@
 package ie.gmit.sw.comparator;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-public class Compare extends UnicastRemoteObject implements ComparatorRemote{
+public class Compare implements ComparatorRemote{
 
 	public Factory factory;
 	
-	public Compare() throws RemoteException{
+	public Compare(){
 		this.factory = new AlgorithmFactory();
 	}
 	

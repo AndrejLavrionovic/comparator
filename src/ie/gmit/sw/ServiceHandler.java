@@ -2,12 +2,16 @@ package ie.gmit.sw;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.Naming;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import ie.gmit.sw.comparator.ComparatorRemote;
+import ie.gmit.sw.comparator.Compare;
 
 public class ServiceHandler extends HttpServlet {
 	
@@ -80,10 +84,22 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<script>");
 		out.print("var wait=setTimeout(\"document.frmRequestDetails.submit();\", 10000);");
 		out.print("</script>");
-				
-		//You can use this method to implement the functionality of an RMI client
 		
-		//
+		
+		ComparatorRemote service = new Compare();
+		int result = service.doCompare(s, t, algorithm);
+		out.print("<h1>Result is here:</h1>");
+		out.print("<p>" + result + "</p>");
+		/*
+		//You can use this method to implement the functionality of an RMI client
+		try{
+			ComparatorRemote service = (ComparatorRemote) Naming.lookup("rmi://127.0.0.1/result");
+			int result = service.doCompare(s, t, algorithm);
+			out.print("<p>" + result + "</p>");
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		*/
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
