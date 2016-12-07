@@ -1,6 +1,6 @@
 package ie.gmit.sw.comparator;
 
-public class Levenshtein {
+public class Levenshtein implements CompareAlgorithm{
     public int distance(String s, String t) {
         int[][] distance = new int[s.length() + 1][t.length() + 1];
         for (int i = 0; i <= s.length(); i++) distance[i][0] = i;
