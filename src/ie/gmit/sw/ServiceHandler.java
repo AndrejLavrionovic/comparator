@@ -3,6 +3,7 @@ package ie.gmit.sw;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.Naming;
+import java.rmi.Remote;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -86,20 +87,27 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</script>");
 		
 		
+		/*
 		ComparatorRemote service = new Compare();
 		int result = service.doCompare(s, t, algorithm);
 		out.print("<h1>Result is here:</h1>");
 		out.print("<p>" + result + "</p>");
-		/*
+		*/
+		
+		
+		
 		//You can use this method to implement the functionality of an RMI client
 		try{
-			ComparatorRemote service = (ComparatorRemote) Naming.lookup("rmi://127.0.0.1/result");
-			int result = service.doCompare(s, t, algorithm);
-			out.print("<p>" + result + "</p>");
+			ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.17:1099/compare");
+			int r = service.getResult(s, t, algorithm);
+
+			out.print("<h1>Result is here:</h1>");
+			out.print("<p>" + r + "</p>");
+			
+
 		}catch(Exception ex){
-			ex.printStackTrace();
+			System.out.println(ex.getMessage());
 		}
-		*/
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
