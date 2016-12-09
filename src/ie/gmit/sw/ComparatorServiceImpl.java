@@ -30,6 +30,7 @@ public class ComparatorServiceImpl extends UnicastRemoteObject implements Compar
 			/*
 			 * To work with remote server we need to set property of
 			 * java.rmi.server.hostname as a server ip address
+			 * solution was found in http://stackoverflow.com/questions/15685686/java-rmi-connectexception-connection-refused-to-host-127-0-1-1
 			 * 
 			 * System.setProperty("java.rmi.server.hostname","192.168.0.19");
 			 * 

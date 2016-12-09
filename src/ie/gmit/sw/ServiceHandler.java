@@ -98,7 +98,7 @@ public class ServiceHandler extends HttpServlet {
 		
 		//You can use this method to implement the functionality of an RMI client
 		try{
-			ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.17:1099/compare");
+			ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.19:1099/compare");
 			int r = service.getResult(s, t, algorithm);
 
 			out.print("<h1>Result is here:</h1>");
