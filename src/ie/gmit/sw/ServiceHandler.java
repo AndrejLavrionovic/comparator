@@ -2,7 +2,6 @@ package ie.gmit.sw;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.Naming;
 import java.util.concurrent.BlockingQueue;
 
 import javax.servlet.ServletContext;
@@ -17,10 +16,12 @@ public class ServiceHandler extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String remoteHost = null;
 	private static long jobNumber = 0;
-	private Requestable res;
 	private Numberable num;
+
+	private Requestable request;
 	private static RequestQueue queue = new RequestQueue();
 	private static Results results = new Results();
 	private JobPool jobPool;
@@ -70,24 +71,21 @@ public class ServiceHandler extends HttpServlet {
 			taskNumber = new String("T" + jobNumber);
 			
 			// Object carrying request data for compare (2)
-			res = new Request(s, t, algorithm, taskNumber);
+			request = new Request(s, t, algorithm, taskNumber);
 			
 			//Add job to in-queue (3)
-			queue.addRequest(res);
+			queue.addRequest(request);
 			
 			
 		}else{
 			//Check out-queue for finished job
 		}
-		//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 		
 		if(!queue.isQueueEmpty()){
 			jobPool = new JobPool();
 			jobPool.compareStrings(queue, results);
 		}
-		else{
-			out.println("<h4>There is nothing to compare.</h4>");
-		}
+		//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 		
 		
 		
@@ -125,8 +123,13 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<h3>Request queue</h3>");	
 		out.print("<OL>");
 		BlockingQueue<Requestable> q = queue.getQueue();
-		for(Requestable item : q){
-			out.print("<LI>Job Number ==> " + item.getJobNumber() + "</LI>");
+		if(q.size() > 0){
+			for(Requestable item : q){
+				out.print("<LI>Job Number ==> " + item.getJobNumber() + "</LI>");
+			}
+		}
+		else{
+			out.print("<LI>Queue is empty now.</LI>");
 		}
 		out.print("</OL>");
 		
@@ -138,33 +141,9 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</script>");
 		
 		if(!results.isResultsEmpty() && results.isResultReady(taskNumber)){
-			out.print("<h1>Request is here:</h1>");
-			out.print("<p style=\"font-size: 20px\">" + results.takeResult(taskNumber).getResult() + "</p>");
+			out.print("<h3>Request is here:</h3>");
+			out.print("<p style=\"font-size: 36px; font-weight: bold\">" + results.takeResult(taskNumber).getResult() + "</p>");
 		}
-		
-		
-		/*
-		ComparatorRemote service = new Compare();
-		int result = service.doCompare(s, t, algorithm);
-		out.print("<h1>Request is here:</h1>");
-		out.print("<p>" + result + "</p>");
-		
-		
-		
-		//You can use this method to implement the functionality of an RMI client
-		try{
-			ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.17:1099/compare");
-			int r = service.getResult(s, t, algorithm);
-
-			out.print("<h1>Request is here:</h1>");
-			out.print("<p style=\"font-size: 20px\">" + r + "</p>");
-			
-
-		}catch(Exception ex){
-			System.out.println(ex.getMessage());
-		}
-		
-		*/
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
