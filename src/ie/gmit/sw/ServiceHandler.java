@@ -3,7 +3,7 @@ package ie.gmit.sw;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.Naming;
-import java.rmi.Remote;
+import java.util.concurrent.BlockingQueue;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -11,13 +11,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ie.gmit.sw.comparator.ComparatorRemote;
-import ie.gmit.sw.comparator.Compare;
-
 public class ServiceHandler extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String remoteHost = null;
 	private static long jobNumber = 0;
+	private Requestable res;
+	private Numberable num;
+	private static RequestQueue queue = new RequestQueue();
+	private static Results results = new Results();
+	private JobPool jobPool;
 
 	public void init() throws ServletException {
 		ServletContext ctx = getServletContext();
@@ -39,12 +45,48 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</head>");		
 		out.print("<body>");
 		
+		
+		
+		//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+		// Section is organising request to comparator
+		// 1) jobNumber generating
+		// 2) creating request object
+		// 3) Put request into queue
+		// 4) Check is there anything in the queue?
+		//    and if there is pass the request to the comparator via RMI
+		// 5) Place result into hashmap
+		// 6) If result is ready (it is in the hashmap) display it.
+		
+		
+		
+		// get jab number (1)
+		num = new JobNumberGenerator();
+		num.generateNumber();
+		jobNumber = num.getJobNumber();
+		
+		System.out.println("generated number is => " + jobNumber);
+		
 		if (taskNumber == null){
 			taskNumber = new String("T" + jobNumber);
-			jobNumber++;
-			//Add job to in-queue
+			
+			// Object carrying request data for compare (2)
+			res = new Request(s, t, algorithm, taskNumber);
+			
+			//Add job to in-queue (3)
+			queue.addRequest(res);
+			
+			
 		}else{
 			//Check out-queue for finished job
+		}
+		//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+		
+		if(!queue.isQueueEmpty()){
+			jobPool = new JobPool();
+			jobPool.compareStrings(queue, results);
+		}
+		else{
+			out.println("<h4>There is nothing to compare.</h4>");
 		}
 		
 		
@@ -78,7 +120,16 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<input name=\"txtS\" type=\"hidden\" value=\"" + s + "\">");
 		out.print("<input name=\"txtT\" type=\"hidden\" value=\"" + t + "\">");
 		out.print("<input name=\"frmTaskNumber\" type=\"hidden\" value=\"" + taskNumber + "\">");
-		out.print("</form>");								
+		out.print("</form>");
+		
+		out.print("<h3>Request queue</h3>");	
+		out.print("<OL>");
+		BlockingQueue<Requestable> q = queue.getQueue();
+		for(Requestable item : q){
+			out.print("<LI>Job Number ==> " + item.getJobNumber() + "</LI>");
+		}
+		out.print("</OL>");
+		
 		out.print("</body>");	
 		out.print("</html>");	
 		
@@ -86,13 +137,17 @@ public class ServiceHandler extends HttpServlet {
 		out.print("var wait=setTimeout(\"document.frmRequestDetails.submit();\", 10000);");
 		out.print("</script>");
 		
+		if(!results.isResultsEmpty() && results.isResultReady(taskNumber)){
+			out.print("<h1>Request is here:</h1>");
+			out.print("<p style=\"font-size: 20px\">" + results.takeResult(taskNumber).getResult() + "</p>");
+		}
+		
 		
 		/*
 		ComparatorRemote service = new Compare();
 		int result = service.doCompare(s, t, algorithm);
-		out.print("<h1>Result is here:</h1>");
+		out.print("<h1>Request is here:</h1>");
 		out.print("<p>" + result + "</p>");
-		*/
 		
 		
 		
@@ -101,13 +156,15 @@ public class ServiceHandler extends HttpServlet {
 			ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.17:1099/compare");
 			int r = service.getResult(s, t, algorithm);
 
-			out.print("<h1>Result is here:</h1>");
+			out.print("<h1>Request is here:</h1>");
 			out.print("<p style=\"font-size: 20px\">" + r + "</p>");
 			
 
 		}catch(Exception ex){
 			System.out.println(ex.getMessage());
 		}
+		
+		*/
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
