@@ -4,18 +4,19 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 import ie.gmit.sw.comparator.ComparatorRemote;
 import ie.gmit.sw.comparator.Compare;
 
-public class ComparatorServiceImpl extends UnicastRemoteObject implements ComparatorService {
+public class Servant extends UnicastRemoteObject implements Servantable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ComparatorServiceImpl() throws RemoteException {}
+	public Servant() throws RemoteException {}
 
 	@Override
 	public int getResult(String s, String t, String alg) throws RemoteException {
@@ -24,8 +25,9 @@ public class ComparatorServiceImpl extends UnicastRemoteObject implements Compar
 	}
 	
 	public static void main(String[] args){
+		
 		try{
-			ComparatorService service = new ComparatorServiceImpl();
+			Servantable service = new Servant();
 			
 			/*
 			 * To work with remote server we need to set property of

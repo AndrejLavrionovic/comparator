@@ -19,8 +19,8 @@ public class Resultator implements Runnable {
 		
 		//You can use this method to implement the functionality of an RMI client
 		try{
-			// ComparatorService service = (ComparatorService)Naming.lookup("rmi://192.168.0.17:1099/compare"); // remote machine
-			ComparatorService service = (ComparatorService)Naming.lookup("rmi://localhost:1099/compare");
+			// Servantable service = (Servantable)Naming.lookup("rmi://192.168.0.17:1099/compare"); // remote machine
+			Servantable service = (Servantable)Naming.lookup("rmi://localhost:1099/compare");
 			int r = service.getResult(request.getStringOne(), request.getStringTwo(), request.getAlgorithm());
 			
 			request.setResult(r);
